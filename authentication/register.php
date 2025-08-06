@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
  if (!$error) {
     // Check if username or email already exists
-    $checkStmt = $conn->prepare("SELECT id FROM admin WHERE username = ? OR email = ?");
+    $checkStmt = $conn->prepare("SELECT id FROM admins WHERE username = ? OR email = ?");
     $checkStmt->bind_param("ss", $username, $email);
     $checkStmt->execute();
     $checkStmt->store_result();
@@ -25,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Username or email is already registered.";
     } else {
         // Proceed to insert
-        $stmt = $conn->prepare("INSERT INTO admin (username, email, password, picture) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $username, $email, $password, $picture);
+        $stmt = $conn->prepare("INSERT INTO admins (username, email, password) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $email, $password);
 
         if ($stmt->execute()) {
             header("Location: login.php?success=1");
@@ -47,8 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Signup - Jumihen</title>
-    <link rel="icon" type="image/png" href="../images/logo.jpg">
+    <title>Admin register</title>
+    <link rel="icon" type="image/png" href="../images/logo.png">
     <style>
         * { box-sizing: border-box; }
         body {
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php
     // Display error message if exists 
     if (!empty($error)): ?>
-        <p style="color: #144999ff;"><?php echo htmlspecialchars($error); ?></p>
+        <p style="color: #000000ff;"><?php echo htmlspecialchars($error); ?></p>
     <?php endif; ?>
 
     <form method="post" enctype="multipart/form-data">
