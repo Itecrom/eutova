@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Verify password
             if (password_verify($password, $hashedPassword)) {
                 $_SESSION['admin_id'] = $id;
-                header("Location: ../admin/ecnk.php");
+                header("Location: ../admindashboard/ecnk.php");
                 exit();
             } else {
                 $error = "Invalid username or password.";
