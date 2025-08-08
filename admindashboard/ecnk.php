@@ -1,103 +1,98 @@
 <?php
+// File: admin/dashboard.php
 session_start();
+include '../includes/config.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['admin_id'])) {
     header("Location: ../authentication/login.php");
     exit();
 }
 
-// Include database config
-include '../includes/config.php';
-
-// Fetch admin details
-$admin_id = $_SESSION['admin_id'];
-$stmt = $conn->prepare("SELECT username FROM admins WHERE id = ?");
-$stmt->bind_param("i", $admin_id);
-$stmt->execute();
-$stmt->bind_result($admin_name);
-$stmt->fetch();
-$stmt->close();
-
-// Fetch some dashboard stats
-$job_count = $conn->query("SELECT COUNT(*) AS total FROM vacancy")->fetch_assoc()['total'];
-$scholarship_count = $conn->query("SELECT COUNT(*) AS total FROM scholarship")->fetch_assoc()['total'];
-$user_count = $conn->query("SELECT COUNT(*) AS total FROM users")->fetch_assoc()['total'];
+// Fetch counts, Onetsetsani uti mwapanga ma ma tables amene akuoneka apa omwe inuyo mulibe ku Database kwanu
+$jobCount = $conn->query("SELECT COUNT(*) FROM vacancy")->fetch_row()[0];
+$scholarshipCount = $conn->query("SELECT COUNT(*) FROM scholarship")->fetch_row()[0];
+$internshipCount = $conn->query("SELECT COUNT(*) FROM internship")->fetch_row()[0];
+$userCount = $conn->query("SELECT COUNT(*) FROM users")->fetch_row()[0];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard | EUTOVA</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
-            margin: 0;
-            padding: 0;
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="EUTOVA Admin Dashboard for managing jobs, scholarships, internships, and users.">
+    <meta name="keywords" content="EUTOVA, Admin Dashboard, Jobs, Scholarships, Internships, Users">
+    <meta name="author" content="Eunice Kaiya, Towera Gundo, Christina Nkawihe & Chimwemwe Zuze">
+    <meta name="theme-color" content="#af4c9eff">
+
+
+    <link rel="icon" href="../images/logo.png">
+    <title>Admin Dashboard - EUTOVA</title>
+    <link rel="stylesheet" href="../style/admin-style.css">
+    
+
+    <!-- JavaScript for Clock and Dark Mode, iyi ndi script imene izionetsa nthawi ku Dashboard kwanu-->
+    <script>
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').textContent = now.toLocaleTimeString();
         }
-        .dashboard {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px;
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
         }
-        .welcome {
-            background: #f578acff;
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .stats {
-            display: flex;
-            gap: 20px;
-            margin-top: 30px;
-        }
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            flex: 1;
-        }
-        .card h2 {
-            font-size: 30px;
-            margin: 0 0 10px;
-        }
-        .card p {
-            font-size: 16px;
-            color: #555;
-        }
-        .logout {
-            float: right;
-            margin-top: -40px;
-        }
-    </style>
+        setInterval(updateClock, 1000);
+        window.onload = updateClock;
+    </script>
+
 </head>
 <body>
+    <header>
+        <h1>EUTOVA Admin Dashboard</h1>
+        <div class="clock" id="clock"></div>
+    </header>
+    
+<!-- Toolbar Section, apa ndipamene pali button loikira mdima komanso chat ya ku future komanso logout-->
+    <div class="toolbar">
+        <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        <button class="chat-btn" onclick="window.location.href='chat.php'">Admin Chat</button>
+        <button class="logout-btn" onclick="window.location.href='../authentication/logout.php'">Logout</button>
+    </div>
+
+<!-- Navigation Section, apa ndi pamene mukhoza kumaonjezera komanso kusankha zochitika ku dashboard zimene mukufuna
+ izizi mukuyenera kuti mukhale ndi ma file amene aikidwa kuti muziti mukadina izikupititsani ku file imeneyoyo
+ kukapanga zimene mwasankha kuti mukapange pa nthawi imeneyoyo-->
+    <nav>
+        <select onchange="if (this.value) window.location.href=this.value">
+            <option value="">-- Manage Content --</option>
+            <option value="manage-jobs.php">Manage Jobs</option>
+            <option value="manage-scholarships.php">Manage Scholarships</option>
+            <option value="manage-internships.php">Manage Internships</option>
+            <option value="manage-users.php">Manage Users</option>
+        </select>
+    </nav>
+
+<!-- Dashboard Section, apa ndi pamene pazilandira ma figure ochokera ku database motengerana ndi zimene zatumizidwa ndi anthu kapena admin-->
     <div class="dashboard">
-        <div class="welcome">
-            <h1>Welcome, <?php echo htmlspecialchars($admin_name); ?>!</h1>
-            <a class="logout" href="../authentication/logout.php" style="color:white; text-decoration: underline;">Logout</a>
-            <p>Here's a quick overview of the EUTOVA platform.</p>
+        <div class="stats">
+            <div class="card">Jobs<br><strong><?= $jobCount ?></strong></div>
+            <div class="card">Scholarships<br><strong><?= $scholarshipCount ?></strong></div>
+            <div class="card">Internships<br><strong><?= $internshipCount ?></strong></div>
+            <div class="card">Users<br><strong><?= $userCount ?></strong></div>
         </div>
 
-        <div class="stats">
-            <div class="card">
-                <h2><?php echo $job_count; ?></h2>
-                <p>Total Job Listings</p>
-            </div>
-            <div class="card">
-                <h2><?php echo $scholarship_count; ?></h2>
-                <p>Total Scholarships</p>
-            </div>
-            <div class="card">
-                <h2><?php echo $user_count; ?></h2>
-                <p>Registered Users</p>
-            </div>
+<!---- Actions Section , apa ndi posankhira koma poyuza ma button osati drop down menu---->
+        <div class="actions">
+            <a href="manage-jobs.php">Manage Jobs</a>
+            <a href="manage-scholarships.php">Manage Scholarships</a>
+            <a href="manage-internships.php">Manage Internships</a>
+            <a href="manage-users.php">Manage Users</a>
         </div>
     </div>
+<!-- Iyi ndi footer yanu imene mukhoza kumapanga Edit chaka chikakhala kuti chatha komanso mukakhala kuti mukuonjezera zinthu ku footer yanu-->
+    <footer>
+        &copy; EUTOVA 2025 Admin Dashboard v1.0 | Developed by Eunice Kaiya, Towera Gundo, Christina Nkawihe & Chimwemwe Zuze
+    </footer>
 </body>
 </html>
