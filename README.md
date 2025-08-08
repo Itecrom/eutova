@@ -49,5 +49,19 @@ Powered by ITEC ICT E SOLUTIONS as part of their final Project for 2025 Internsh
 ## 📌 License
 This project is currently for educational and developmental use. Distribution or commercial use requires permission from the authors.
 
+## 🖼️ Screenshots
+
+Here are a few screenshots of the EUTOVA platform interface:
+
+### 🔐 Login Page
+![Login Page](screenshots/login.png)
+
+### 📝 Register Page
+![Register Page](screenshots/register.png)
+
+### 📊 Admin Dashboard
+![Dashboard](screenshots/dashboard.png)
+
+
 
 **Thank you for exploring EUTOVA — Empowering You Through Opportunity.**
